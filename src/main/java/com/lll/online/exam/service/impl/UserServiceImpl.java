@@ -2,6 +2,7 @@ package com.lll.online.exam.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lll.online.exam.entity.User;
+import com.lll.online.exam.mapper.BaseMapper;
 import com.lll.online.exam.mapper.UserMapper;
 import com.lll.online.exam.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,13 @@ import java.util.List;
 @Service("userService")
 public class UserServiceImpl extends BaseServiceImpl<User> implements UserService {
 
-    @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    public UserServiceImpl(UserMapper userMapper) {
+        super(userMapper);
+        this.userMapper = userMapper;
+    }
 
     @Override
     public User selectByUserName(String userName) {

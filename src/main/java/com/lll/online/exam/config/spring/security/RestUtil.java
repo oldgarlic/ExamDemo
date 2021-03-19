@@ -27,6 +27,10 @@ public class RestUtil {
         response(response,code,message,null);
     }
 
+    public static void response(HttpServletResponse response,SystemCode systemCode,Object content){
+        response(response,systemCode.getCode(),systemCode.getMessage(),content);
+    }
+
     public static void response(HttpServletResponse response,Integer code,String message,Object content){
         try {
             Result<Object> result = new Result<>(code, message, content);

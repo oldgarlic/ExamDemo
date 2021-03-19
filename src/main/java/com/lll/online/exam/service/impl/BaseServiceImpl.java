@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class BaseServiceImpl<T> implements BaseService<T> {
 
-    // 引用mybatis-plus的basemapper
-    @Autowired
+
     private BaseMapper<T> baseMapper;
+
+    public BaseServiceImpl(BaseMapper<T> baseMapper) {
+        this.baseMapper = baseMapper;
+    }
 
     @Override
     public int insert(T t) {

@@ -2,6 +2,7 @@ package com.lll.online.exam.config.spring.security;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author ：Mr.Garlic
  * @date ： 2021/3/16
  */
+
 public class RestTokenBasedRememberMeServices extends TokenBasedRememberMeServices {
 
 

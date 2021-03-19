@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * 系统配置
  *
@@ -18,5 +20,5 @@ import org.springframework.stereotype.Component;
 @Data
 public class SystemConfig {
     private PasswordKeyConfig pwdKey;
-
+    private List<String> securityIgnoreUrls;
 }
