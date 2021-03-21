@@ -46,7 +46,7 @@ public class RestAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 
         com.lll.online.exam.entity.User newUser = new com.lll.online.exam.entity.User();
         newUser.setUserName(user.getUserName());
-        newUser.setPassword(user.getImagePath());
+        newUser.setImagePath(user.getImagePath());
         RestUtil.response(response, SystemCode.OK,newUser);
     }
 }

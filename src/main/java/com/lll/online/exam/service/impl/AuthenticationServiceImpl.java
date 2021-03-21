@@ -31,8 +31,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return false;
         }
         // 加密或者解密后进行对比
-        String pwd = pwdDecode(password);
-        return pwd.equals(encodePassword);
+        String pwd = pwdDecode(encodePassword);
+        return pwd.equals(password);
     }
 
 

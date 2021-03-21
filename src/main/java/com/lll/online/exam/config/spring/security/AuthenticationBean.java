@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationBean {
-    private String username;
+    private String userName;
     private String password;
     private boolean remember;
 }

@@ -21,4 +21,5 @@ import java.util.List;
 public class SystemConfig {
     private PasswordKeyConfig pwdKey;
     private List<String> securityIgnoreUrls;
+    private QnConfig qnConfig;
 }

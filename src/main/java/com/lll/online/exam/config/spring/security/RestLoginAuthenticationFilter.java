@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -23,6 +24,7 @@ import java.io.InputStream;
  * @author ：Mr.Garlic
  * @date ： 2021/3/16
  */
+
 public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 
@@ -35,7 +37,7 @@ public class RestLoginAuthenticationFilter extends AbstractAuthenticationProcess
         // TODO：从request中获取流，生成AuthenticationBean，②：是否使用rememberMe功能，③：调用AuthenticationManager
         InputStream ips = request.getInputStream();
         AuthenticationBean authenticationBean = JsonUtil.toJsonObject(ips, AuthenticationBean.class);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authenticationBean.getUsername(), authenticationBean.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authenticationBean.getUserName(), authenticationBean.getPassword());
         setDetails(request,token);
         // 是否使用RememberMeService
         request.setAttribute(TokenBasedRememberMeServices.DEFAULT_PARAMETER,authenticationBean.isRemember());

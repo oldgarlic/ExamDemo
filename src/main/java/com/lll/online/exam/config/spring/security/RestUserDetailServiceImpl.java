@@ -34,7 +34,7 @@ public class RestUserDetailServiceImpl implements UserDetailsService {
 
         User user = userService.selectByUserName(username);
 
-        if(user!=null){
+        if(user==null){
             throw new UsernameNotFoundException("用户不存在");
         }
 

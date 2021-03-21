@@ -1,4 +1,4 @@
-package com.lll.online.exam;
+package com.lll.online.exam.listener;
 
 import com.lll.online.exam.event.UserEvent;
 import com.lll.online.exam.service.UserEventLogService;

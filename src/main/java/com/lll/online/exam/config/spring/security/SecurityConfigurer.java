@@ -63,8 +63,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers(arr).permitAll()
-                .antMatchers("/api/admin/**").hasRole(RoleEnum.ADMIN.getName())
-                .antMatchers("/api/student/**").hasRole(RoleEnum.STUDENT.getName())
+                .antMatchers("/api/admin/**").hasAnyRole(RoleEnum.ADMIN.getName())
+                .antMatchers("/api/student/**").hasAnyRole(RoleEnum.STUDENT.getName(),RoleEnum.ADMIN.getName())
                 .anyRequest().permitAll()
 
                 // 为啥写下面
@@ -76,8 +76,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
                 // invalidateHttpSession(true)→logout的时候Session无效
                 .and().logout().logoutUrl("/api/user/logout").logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true)
-                .and().rememberMe().key(CookieConfig.getName()).tokenValiditySeconds(CookieConfig.getInterval())
-                .userDetailsService(userDetailService)
+                .and().rememberMe().key(CookieConfig.getName()).tokenValiditySeconds(CookieConfig.getInterval()).userDetailsService(userDetailService)
                 .and().csrf().disable().cors();
 
     }

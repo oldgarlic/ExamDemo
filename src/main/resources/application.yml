@@ -3,7 +3,7 @@ spring:
     password: root
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/online_test
+    url: jdbc:mysql://localhost:3306/online_test?characterEncoding=utf8&useSSL=false&serverTimezone = GMT
 
 mybatis-plus:
   global-config:
@@ -19,5 +19,12 @@ system:
     - /api/admin/upload/configAndUpload
     - /api/admin/upload/auth
     - /api/student/user/register
+  qn-config:
+    access-key: nNbJf7a9nOxfqYHjA-jGOH97ubD9zMuMVaUwoVID
+    secret-key: rSVSSQ7-ay3veQ5LP6Mf-JkaaYHor5kbNFbtBi5g
+    url: http://qpfxbg5yd.hn-bkt.clouddn.com
+    bucket: lllpicture
+
+
 server:
   port: 8000

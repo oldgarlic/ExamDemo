@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 用户登录认证处理器
+ * 用户登录认证失败处理器
  *
  * @author ：Mr.Garlic
  * @date ： 2021/3/19

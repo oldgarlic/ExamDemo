@@ -2,14 +2,10 @@ package com.lll.online.exam.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lll.online.exam.entity.User;
-import com.lll.online.exam.mapper.BaseMapper;
 import com.lll.online.exam.mapper.UserMapper;
 import com.lll.online.exam.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * (User)表服务实现类
@@ -34,5 +30,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         queryWrapper.eq("user_name",userName);
         User user = userMapper.selectOne(queryWrapper);
         return user;
+    }
+
+    @Override
+    public Integer changeUserImage(User user, String imagePath) {
+        user.setImagePath(imagePath);
+        return userMapper.updateById(user);
     }
 }

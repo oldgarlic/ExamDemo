@@ -12,4 +12,5 @@ import java.util.List;
 public interface UserService extends BaseService<User>{
 
     User selectByUserName(String userName);
+    Integer changeUserImage(User user,String imagePath);
 }
