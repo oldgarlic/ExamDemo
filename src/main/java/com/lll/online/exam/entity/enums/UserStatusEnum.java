@@ -1,7 +1,7 @@
 package com.lll.online.exam.entity.enums;
 
 /**
- * 用户状态 integer-string
+ * 用户状态枚举：数据保存的是Integer，前端需要的是String
  *
  * @author ：Mr.Garlic
  * @date ： 2021/3/16

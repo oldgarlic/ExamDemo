@@ -1,4 +1,4 @@
-package com.lll.online.exam.viewmodel.student;
+package com.lll.online.exam.viewmodel.student.user;
 
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.utility.DateTimeUtil;

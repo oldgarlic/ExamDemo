@@ -1,10 +1,9 @@
-package com.lll.online.exam.controller;
+package com.lll.online.exam.controller.student;
 
 import com.lll.online.exam.base.BaseController;
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.service.FileUpload;
 import com.lll.online.exam.service.UserService;
-import com.lll.online.exam.viewmodel.student.UserResponseVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,7 @@ public class UploadController extends BaseController {
     * @Date: 2021/3/20
     */
     @PostMapping("image")
-    public Result<String> updateUserImage(MultipartFile file){
+    public Result<String> updateUserImage( MultipartFile file){
         //TODO：调用七牛云api存储图片
         String imageName = file.getOriginalFilename();
         long size = file.getSize();

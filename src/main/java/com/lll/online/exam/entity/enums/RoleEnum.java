@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 角色枚举
+ * 角色枚举：数据保存的是Integer，SpringSecurity需要的是String
  *
  * @author ：Mr.Garlic
  * @date ： 2021/3/16

@@ -1,4 +1,4 @@
-package com.lll.online.exam.viewmodel.student;
+package com.lll.online.exam.viewmodel.admin.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,19 +8,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 用户注册接受类
+ * 用户信息更新
  *
  * @author ：Mr.Garlic
- * @date ： 2021/3/21
+ * @date ： 2021/3/22
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegisterVM {
+public class UserUpdateVM {
     @NotBlank
-    private String userName;
+    private String realName;
     @NotBlank
-    private String password;
-    @NotNull
-    private Integer userLevel;
+    private String phone;
 }

@@ -9,6 +9,7 @@ mybatis-plus:
   global-config:
     db-config:
       table-prefix: t_
+  type-aliases-package: com.lll.online.exam.entity
 
 
 system:

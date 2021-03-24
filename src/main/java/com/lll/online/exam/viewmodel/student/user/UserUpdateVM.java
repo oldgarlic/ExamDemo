@@ -1,4 +1,4 @@
-package com.lll.online.exam.viewmodel.student;
+package com.lll.online.exam.viewmodel.student.user;
 
 import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;

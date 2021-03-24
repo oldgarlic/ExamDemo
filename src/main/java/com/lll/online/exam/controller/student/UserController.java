@@ -1,4 +1,4 @@
-package com.lll.online.exam.controller;
+package com.lll.online.exam.controller.student;
 
 import com.lll.online.exam.base.BaseController;
 import com.lll.online.exam.base.Result;
@@ -12,17 +12,15 @@ import com.lll.online.exam.service.MessageService;
 import com.lll.online.exam.service.UserEventLogService;
 import com.lll.online.exam.service.UserService;
 import com.lll.online.exam.utility.DateTimeUtil;
-import com.lll.online.exam.viewmodel.student.UserEventLogVM;
-import com.lll.online.exam.viewmodel.student.UserRegisterVM;
-import com.lll.online.exam.viewmodel.student.UserResponseVM;
-import com.lll.online.exam.viewmodel.student.UserUpdateVM;
+import com.lll.online.exam.viewmodel.student.user.UserEventLogVM;
+import com.lll.online.exam.viewmodel.student.user.UserRegisterVM;
+import com.lll.online.exam.viewmodel.student.user.UserResponseVM;
+import com.lll.online.exam.viewmodel.student.user.UserUpdateVM;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;

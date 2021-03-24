@@ -1,6 +1,11 @@
 package com.lll.online.exam.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.entity.User;
+import com.lll.online.exam.viewmodel.admin.user.UserPageRequestVM;
+import com.lll.online.exam.viewmodel.admin.user.UserResponseVM;
+
 import java.util.List;
 
 /**
@@ -13,4 +18,11 @@ public interface UserService extends BaseService<User>{
 
     User selectByUserName(String userName);
     Integer changeUserImage(User user,String imagePath);
+
+    PageResult<UserResponseVM> selectUserPageList(UserPageRequestVM vm);
+
+    Integer deleteById(Integer id);
+
+    Integer changeStatus(Integer id);
+
 }
