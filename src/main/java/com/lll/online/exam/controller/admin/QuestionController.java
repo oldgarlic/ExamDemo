@@ -1,6 +1,7 @@
 package com.lll.online.exam.controller.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.lll.online.exam.base.BaseController;
 import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.entity.Question;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO
@@ -22,7 +24,7 @@ import java.util.List;
  */
 @RestController("AdminQuestionController")
 @RequestMapping("/api/admin/question")
-public class QuestionController {
+public class QuestionController extends BaseController {
     @Autowired
     private QuestionService questionService;
 
@@ -34,7 +36,11 @@ public class QuestionController {
     */
     public Result<PageResult<QuestionResponseVM>> pageList(@RequestBody QuestionPageRequestVM model){
         IPage<Question> list = questionService.pageList(model);
-        // TODO： 待续
+        List<QuestionResponseVM> data = list.getRecords().stream().map(t->{
+            QuestionResponseVM map = modelMapper.map(t, QuestionResponseVM.class);
+            //TODO：未完待续
+            return map;
+        }).collect(Collectors.toList());
         return Result.ok();
     }
 }
