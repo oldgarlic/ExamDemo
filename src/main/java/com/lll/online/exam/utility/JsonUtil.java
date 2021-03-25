@@ -47,4 +47,18 @@ public class JsonUtil {
         }
         return null;
     }
+
+    /*
+    * @Description: 字符串转对象
+    * @Date: 2021/3/25
+    */
+    public static <T> T toJsonObject(String json, Class<T> valueType) {
+        try {
+            return MAPPER.<T>readValue(json, valueType);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
 }

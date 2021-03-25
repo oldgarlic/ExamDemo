@@ -23,7 +23,7 @@ public class QuestionResponseVM extends BaseVM {
 
     private Integer subjectId;
 
-    private Integer score;
+    private String score;
 
     private Integer gradeLevel;
 
@@ -37,13 +37,11 @@ public class QuestionResponseVM extends BaseVM {
 
     private Integer status;
 
-    private Date createTime;
-
-    // page查询的时候没有
+    private String createTime;
+    // page查询的时候值 = null
     private Integer textContentId;
-    // page查询的时候没有
+    // page查询的时候值 = null
     private Integer analyzeTextContentId;
-    // page查询的时候需要访问t_text_content表
+    // page查询的时候需要访问t_text_content表，进行字符创解析
     private String shortTitle;
-
 }

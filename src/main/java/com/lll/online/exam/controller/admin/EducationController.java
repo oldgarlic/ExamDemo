@@ -29,6 +29,18 @@ public class EducationController extends BaseController {
     private SubjectService subjectService;
 
     /*
+    * @Description: 列出所有学科
+    * @Param: []
+    * @return: List<Subject>
+    * @Date: 2021/3/25
+    */
+    @PostMapping("subject/list")
+    public Result<List<Subject>>list(){
+        List<Subject> list = subjectService.selectAllSubject();
+        return Result.ok(list);
+    }
+
+    /*
     * @Description: subject分页查询
     * @Param: SubjectPageRequestVM
     * @return: Result<PageResult<SubjectResponseVM>>
