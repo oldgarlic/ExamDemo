@@ -74,23 +74,23 @@ public class QuestionController extends BaseController {
         QuestionEditRequestVM map = modelMapper.map(question, QuestionEditRequestVM.class);
         map.setAnalyze(questionObject.getAnalyze());
         map.setTitle(questionObject.getTitleContent());
-
+        // 不同题目类型不同操作
         QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.getQuestionTypeEnum(question.getQuestionType());
-
         switch (questionTypeEnum){
+            // 答案放在 correct
             case TrueFalse:
             case SingleChoice:
-                map.setCorrect(questionObject.getCorrect());
+            case ShortAnswer:
+                map.setCorrect(question.getCorrect());
                 break;
+            // 答案放在correctArray
             case GapFilling:
-                questionObject.getQuestionItemObjects();
-                break;
-            case MultipleChoice:
                 List<String> correctContent = questionObject.getQuestionItemObjects().stream().map(d -> d.getContent()).collect(Collectors.toList());
                 map.setCorrectArray(correctContent);
                 break;
-            case ShortAnswer:
-                map.setCorrect(questionObject.getCorrect());
+            // 答案放在correctArray
+            case MultipleChoice:
+                map.setCorrectArray(ExamUtil.contentToArray(question.getCorrect()));
                 break;
             default:
                 break;
@@ -153,7 +153,7 @@ public class QuestionController extends BaseController {
     public Result editOrSaveQuestion(@RequestBody @Valid QuestionEditRequestVM model){
         // TODO：①：检验不同题目要求；②：根据model.getId()==null来决定插入或修改Question；
         // 不同题目类型参数要求不同
-        Result result = validQuestionType(model);
+        Result result = validQuestion(model);
 
         if(result.getCode()!= SystemCode.OK.getCode()){
             return result;
@@ -167,11 +167,19 @@ public class QuestionController extends BaseController {
         return Result.ok();
     }
 
-    public Result validQuestionType(QuestionEditRequestVM model){
-        // TODO：那这里为什么只有三个问题类型的校验，还有两个呢
-        // 单选或者判断题：必须存在题目答案
+    /*
+    * @Description: 验证Question是否合规
+    * @Param: QuestionEditRequestVM
+    * @return: Result
+    * @Date: 2021/3/26
+    */
+    public Result validQuestion(QuestionEditRequestVM model){
+        // TODO：单选、判断、简单题需检验 correct 字段的notBlank，填空题需检验每填空处总分和预设总分是否一致
+        // 单选或者判断题或者：必须存在题目答案
         Integer questionType = model.getQuestionType();
-        if(questionType== QuestionTypeEnum.SingleChoice.getCode()||questionType==QuestionTypeEnum.TrueFalse.getCode()){
+        if(questionType== QuestionTypeEnum.SingleChoice.getCode()
+                ||questionType==QuestionTypeEnum.TrueFalse.getCode()
+                || QuestionTypeEnum.ShortAnswer.getCode()==questionType){
             if(StringUtils.isBlank(model.getCorrect())){
                 return new Result(2,"题目答案不能为空");
             }

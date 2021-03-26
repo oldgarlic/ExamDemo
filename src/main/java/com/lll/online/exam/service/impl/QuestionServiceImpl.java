@@ -88,6 +88,7 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
         setQuestionTextContentFormVM(textContent,model);
         textContentMapper.insert(textContent);
 
+
         Question question = new Question();
         // 不同题目类型的correct是不一样的
         // 单选的correct在correct，多选的correct在correctArray
@@ -96,9 +97,8 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
         question.setCreateUser(currentUser.getId());
         question.setDeleted(false);
         question.setGradeLevel(model.getGradeLevel());
-
+        // 这里
         question.setInfoTextContentId(textContent.getId());
-
         question.setDifficult(model.getDifficult());
         question.setScore(ExamUtil.scoreFromVM(model.getScore()));
         question.setStatus(QuestionStatusEnum.OK.getCode());
@@ -109,7 +109,10 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
         questionMapper.insert(question);
         return null;
     }
-
+    /*
+    * @Description: 把QuestionEditRequestVM.items和部分信息转化为QuestionObject的JSONString
+    * @Date: 2021/3/27
+    */
     private void setQuestionTextContentFormVM(TextContent textContent, QuestionEditRequestVM model) {
 
         List<QuestionItemObject> list = model.getItems().stream().map(t->{

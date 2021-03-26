@@ -70,6 +70,7 @@ public class Question implements Serializable {
     private Boolean deleted;
 
     public void setCorrectFromVM(String correct, List<String> correctArray){
+        // 多选题
         if(this.getQuestionType() == QuestionTypeEnum.MultipleChoice.getCode()){
             this.setCorrect(ExamUtil.contentToString(correctArray));
         }else{
