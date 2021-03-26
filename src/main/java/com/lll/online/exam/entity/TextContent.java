@@ -1,5 +1,7 @@
 package com.lll.online.exam.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +21,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class TextContent implements Serializable {
     private static final long serialVersionUID = 624630027386404619L;
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     
     private String content;

@@ -3,7 +3,7 @@ spring:
     password: root
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/online_test?characterEncoding=utf8&useSSL=false&serverTimezone = GMT
+    url: jdbc:mysql://localhost:3306/online_test?characterEncoding=utf8&useSSL=false
 
 mybatis-plus:
   global-config:

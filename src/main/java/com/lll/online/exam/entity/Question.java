@@ -1,12 +1,17 @@
 package com.lll.online.exam.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.lll.online.exam.entity.enums.QuestionTypeEnum;
+import com.lll.online.exam.utility.ExamUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * (Question)实体类
@@ -19,7 +24,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Question implements Serializable {
     private static final long serialVersionUID = 236212924138672083L;
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /**
     * 1.单选题  2.多选题  3.判断题 4.填空题 5.简答题
@@ -64,5 +69,11 @@ public class Question implements Serializable {
     
     private Boolean deleted;
 
-
+    public void setCorrectFromVM(String correct, List<String> correctArray){
+        if(this.getQuestionType() == QuestionTypeEnum.MultipleChoice.getCode()){
+            this.setCorrect(ExamUtil.contentToString(correctArray));
+        }else{
+            this.setCorrect(correct);
+        }
+    }
 }

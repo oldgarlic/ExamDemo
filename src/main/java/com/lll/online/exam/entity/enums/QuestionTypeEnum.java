@@ -1,5 +1,8 @@
 package com.lll.online.exam.entity.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Question类型枚举
  *
@@ -22,5 +25,24 @@ public enum  QuestionTypeEnum {
     int code;
     String name;
 
+    public static final HashMap<Integer,QuestionTypeEnum> MAP = new HashMap<>();
 
+    public int getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static QuestionTypeEnum getQuestionTypeEnum(Integer code){
+
+        return MAP.get(code);
+    }
+
+    static {
+        for (QuestionTypeEnum item : QuestionTypeEnum.values()) {
+            MAP.put(item.getCode(),item);
+        }
+    }
 }

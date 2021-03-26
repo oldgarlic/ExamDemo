@@ -26,4 +26,6 @@ public interface QuestionService extends BaseService<Question>{
 
     Integer updateQuestion(QuestionEditRequestVM model);
 
+    Integer deleteById(Integer id);
+
 }
