@@ -66,54 +66,8 @@ public class QuestionController extends BaseController {
     */
     @PostMapping("select/{id}")
     public Result<QuestionEditRequestVM> selectById(@PathVariable Integer id){
-        //TODO：Go
-        Question question = questionService.selectById(id);
-        TextContent textContent = textContentService.selectById(question.getInfoTextContentId());
-        QuestionObject questionObject = JsonUtil.toJsonObject(textContent.getContent(), QuestionObject.class);
-
-        QuestionEditRequestVM map = modelMapper.map(question, QuestionEditRequestVM.class);
-        map.setAnalyze(questionObject.getAnalyze());
-        map.setTitle(questionObject.getTitleContent());
-        // 不同题目类型不同操作
-        QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.getQuestionTypeEnum(question.getQuestionType());
-        switch (questionTypeEnum){
-            // 答案放在 correct
-            case TrueFalse:
-            case SingleChoice:
-            case ShortAnswer:
-                map.setCorrect(question.getCorrect());
-                break;
-            // 答案放在correctArray
-            case GapFilling:
-                List<String> correctContent = questionObject.getQuestionItemObjects().stream().map(d -> d.getContent()).collect(Collectors.toList());
-                map.setCorrectArray(correctContent);
-                break;
-            // 答案放在correctArray
-            case MultipleChoice:
-                map.setCorrectArray(ExamUtil.contentToArray(question.getCorrect()));
-                break;
-            default:
-                break;
-        }
-        // 不同答案设置不同地方
-        // 单选/对错题 question-correct
-        // 多选 question-correct
-        // 填空 questionObjectItem-
-        // 简答 questionObject中的correct
-
-
-        List<QuestionEditItemVM> collect = questionObject.getQuestionItemObjects().stream().map(t -> {
-            QuestionEditItemVM item = modelMapper.map(t, QuestionEditItemVM.class);
-            if(t.getScore()!=null){
-                item.setScore(ExamUtil.scoreToVM(t.getScore()));
-            }
-            return item;
-        }).collect(Collectors.toList());
-        map.setItems(collect);
-
-
-
-        return Result.ok(map);
+        QuestionEditRequestVM questionEditRequestVM = questionService.getQuestionEditRequestVM(id);
+        return Result.ok(questionEditRequestVM);
     }
 
 

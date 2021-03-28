@@ -71,10 +71,10 @@ public class DateTimeUtil {
 
 
     /*
-    * @Description: Date字符串解析为Date对象
+    * @Description: 日期字符串解析为Date对象
     * @Date: 2021/3/22
     */
-    private static Date parse(String normalFormat, String date) {
+    public static Date parse(String normalFormat, String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(normalFormat);
         try {
           return  dateFormat.parse(date);
@@ -83,6 +83,8 @@ public class DateTimeUtil {
         }
         return null;
     }
+
+
     /*
     * @Description: 如2月，获取1.2.3.、、、31的List<String>
     * @Date: 2021/3/22

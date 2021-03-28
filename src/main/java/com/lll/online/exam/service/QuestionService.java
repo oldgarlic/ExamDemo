@@ -28,4 +28,6 @@ public interface QuestionService extends BaseService<Question>{
 
     Integer deleteById(Integer id);
 
+    QuestionEditRequestVM getQuestionEditRequestVM(Integer id);
+
 }

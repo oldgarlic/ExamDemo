@@ -28,5 +28,8 @@ public class TextContent implements Serializable {
     
     private Date createTime;
 
-
+    public TextContent(String content, Date createTime) {
+        this.content = content;
+        this.createTime = createTime;
+    }
 }

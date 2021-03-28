@@ -9,6 +9,7 @@ import com.lll.online.exam.entity.Question;
 import com.lll.online.exam.entity.TextContent;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.entity.enums.QuestionStatusEnum;
+import com.lll.online.exam.entity.enums.QuestionTypeEnum;
 import com.lll.online.exam.entity.question.QuestionItemObject;
 import com.lll.online.exam.entity.question.QuestionObject;
 import com.lll.online.exam.mapper.QuestionMapper;
@@ -16,9 +17,12 @@ import com.lll.online.exam.mapper.TextContentMapper;
 import com.lll.online.exam.service.QuestionService;
 import com.lll.online.exam.utility.ExamUtil;
 import com.lll.online.exam.utility.JsonUtil;
+import com.lll.online.exam.utility.ModelMapperUtil;
+import com.lll.online.exam.viewmodel.admin.question.QuestionEditItemVM;
 import com.lll.online.exam.viewmodel.admin.question.QuestionEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.question.QuestionPageRequestVM;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +43,7 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
 
     private QuestionMapper questionMapper;
     private TextContentMapper textContentMapper;
+    private final ModelMapper modelMapper = ModelMapperUtil.instance();
 
     @Autowired
     public QuestionServiceImpl( QuestionMapper questionMapper,TextContentMapper textContentMapper) {
@@ -165,5 +170,57 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
         question.setDeleted(true);
         questionMapper.updateById(question);
         return null;
+    }
+
+    @Override
+    public QuestionEditRequestVM getQuestionEditRequestVM(Integer id) {
+
+        //TODO：Go
+        Question question = questionMapper.selectById(id);
+        TextContent textContent = textContentMapper.selectById(question.getInfoTextContentId());
+        QuestionObject questionObject = JsonUtil.toJsonObject(textContent.getContent(), QuestionObject.class);
+        QuestionEditRequestVM questionEditRequestVM = modelMapper.map(question, QuestionEditRequestVM.class);
+
+        questionEditRequestVM.setScore(ExamUtil.scoreToVM(question.getScore()));
+        questionEditRequestVM.setAnalyze(questionObject.getAnalyze());
+        questionEditRequestVM.setTitle(questionObject.getTitleContent());
+        // 不同题目类型不同操作
+        QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.getQuestionTypeEnum(question.getQuestionType());
+        switch (questionTypeEnum){
+            // 答案放在 correct
+            case TrueFalse:
+            case SingleChoice:
+            case ShortAnswer:
+                questionEditRequestVM.setCorrect(question.getCorrect());
+                break;
+            // 答案放在correctArray
+            case GapFilling:
+                List<String> correctContent = questionObject.getQuestionItemObjects().stream().map(d -> d.getContent()).collect(Collectors.toList());
+                questionEditRequestVM.setCorrectArray(correctContent);
+                break;
+            // 答案放在correctArray
+            case MultipleChoice:
+                questionEditRequestVM.setCorrectArray(ExamUtil.contentToArray(question.getCorrect()));
+                break;
+            default:
+                break;
+        }
+        // 不同答案设置不同地方
+        // 单选/对错题 question-correct
+        // 多选 question-correct
+        // 填空 questionObjectItem-
+        // 简答 questionObject中的correct
+
+
+        List<QuestionEditItemVM> collect = questionObject.getQuestionItemObjects().stream().map(t -> {
+            QuestionEditItemVM item = modelMapper.map(t, QuestionEditItemVM.class);
+            if(t.getScore()!=null){
+                item.setScore(ExamUtil.scoreToVM(t.getScore()));
+            }
+            return item;
+        }).collect(Collectors.toList());
+        questionEditRequestVM.setItems(collect);
+
+        return questionEditRequestVM;
     }
 }

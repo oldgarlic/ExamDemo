@@ -2,12 +2,14 @@ package com.lll.online.exam.utility;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * 以ObjectMapper为基础的JSON工具类
@@ -61,4 +63,18 @@ public class JsonUtil {
         return null;
     }
 
+    /*
+    * @Description: 字符串转List<>
+    * @Date: 2021/3/27
+    */
+    public static <T> List<T> toJsonListObject(String json, Class<T> valueType) {
+        try {
+            JavaType getCollectionType = MAPPER.getTypeFactory().constructParametricType(List.class, valueType);
+            List<T> list = MAPPER.readValue(json, getCollectionType);
+            return list;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
 }
