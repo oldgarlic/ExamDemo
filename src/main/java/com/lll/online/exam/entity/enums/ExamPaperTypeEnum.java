@@ -8,8 +8,8 @@ package com.lll.online.exam.entity.enums;
  */
 public enum ExamPaperTypeEnum {
     Fixed(1, "固定试卷"),
-    TimeLimit(2,"时段试卷"),
-    Task(3, "任务试卷");;
+    TimeLimit(4,"时段试卷"),
+    Task(6, "任务试卷");;
 
     private Integer code;
     private String name;

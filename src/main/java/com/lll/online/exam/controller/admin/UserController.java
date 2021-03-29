@@ -7,6 +7,7 @@ import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.entity.UserEventLog;
+import com.lll.online.exam.entity.other.KeyValue;
 import com.lll.online.exam.service.AuthenticationService;
 import com.lll.online.exam.service.UserEventLogService;
 import com.lll.online.exam.service.UserService;
@@ -37,6 +38,18 @@ public class UserController extends BaseController {
     private AuthenticationService authenticationService;
     @Autowired
     private UserEventLogService userEventLogService;
+
+    /*
+    * @Description: 根据用户名查询用户
+    * @Param: String
+    * @return: Result<List<KeyValue>>
+    * @Date: 2021/3/28
+    */
+    @PostMapping("selectByUserName")
+    public Result<List<KeyValue>> selectByUserName(@RequestBody String userName){
+        List<KeyValue> keyValues = userService.selectNameByUserName(userName);
+        return Result.ok(keyValues);
+    }
 
     /*
     * @Description: 获取当前用户信息

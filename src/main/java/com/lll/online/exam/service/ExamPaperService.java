@@ -6,6 +6,7 @@ import com.lll.online.exam.entity.ExamPaper;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperPageRequestVM;
+import com.lll.online.exam.viewmodel.admin.exam.TaskExamPageRequestVM;
 
 import java.util.List;
 
@@ -28,4 +29,9 @@ public interface ExamPaperService extends BaseService<ExamPaper>{
 
     Integer deleteById(Integer id);
 
+    void updateTaskPaper(Integer taskId, List<Integer> paperIds);
+
+    void clearPaperIds(List<Integer> paperIds);
+
+    IPage<ExamPaper> taskExamPage(TaskExamPageRequestVM model);
 }

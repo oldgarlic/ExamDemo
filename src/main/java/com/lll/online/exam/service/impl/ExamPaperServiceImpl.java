@@ -2,6 +2,7 @@ package com.lll.online.exam.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lll.online.exam.entity.ExamPaper;
@@ -171,6 +172,38 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
         examPaper.setDeleted(true);
         int count = examPaperMapper.updateById(examPaper);
         return count;
+    }
+
+    @Override
+    public void updateTaskPaper(Integer taskId, List<Integer> paperIds) {
+        QueryWrapper<ExamPaper> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id",paperIds);
+        List<ExamPaper> examPapers = examPaperMapper.selectList(queryWrapper);
+        for (ExamPaper t : examPapers) {
+            t.setTaskExamId(taskId);
+        }
+        UpdateWrapper<ExamPaper> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id",paperIds).set("task_exam_id",taskId);
+        examPaperMapper.update(null,updateWrapper);
+    }
+
+    @Override
+    public void clearPaperIds(List<Integer> paperIds) {
+        UpdateWrapper<ExamPaper> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id",paperIds).set("task_exam_id",null);
+        examPaperMapper.update(null,updateWrapper);
+    }
+
+    @Override
+    public IPage<ExamPaper> taskExamPage(TaskExamPageRequestVM model) {
+        QueryWrapper<ExamPaper> queryWrapper = new QueryWrapper<>();
+        queryWrapper.isNull("task_exam_id").eq("grade_level",model.getLevel()).eq("paper_type",model.getPaperType());
+        Page<ExamPaper> examPaperPage = new Page<>(model.getPageIndex(), model.getPageSize());
+        if(model.getSubjectId()!=null){
+            queryWrapper.eq("subject_id",model.getSubjectId());
+        }
+        IPage<ExamPaper> examPaperIPage = examPaperMapper.selectPage(examPaperPage, queryWrapper);
+        return examPaperIPage;
     }
 
     /*

@@ -10,6 +10,7 @@ import com.lll.online.exam.utility.DateTimeUtil;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperPageRequestVM;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperResponseVM;
+import com.lll.online.exam.viewmodel.admin.exam.TaskExamPageRequestVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,4 +88,23 @@ public class ExamPaperController extends BaseController {
         PageResult<ExamPaperResponseVM> page = new PageResult<>(data, pageInfo.getTotal(), pageInfo.getCurrent());
         return Result.ok(page);
     }
+
+
+    /*
+    * @Description: 查询未在任务中的试卷
+    * @Param: TaskExamPageRequestVM
+    * @return: Result<PageResult<ExamPaperResponseVM>>
+    * @Date: 2021/3/28
+    */
+    @PostMapping("taskExamPage")
+    public Result<PageResult<ExamPaperResponseVM>> taskExamPage(@RequestBody TaskExamPageRequestVM model){
+        IPage<ExamPaper> examPaperIPage = examPaperService.taskExamPage(model);
+        List<ExamPaperResponseVM> list = examPaperIPage.getRecords().stream().map(t -> {
+            ExamPaperResponseVM examPaperResponseVM = modelMapper.map(t, ExamPaperResponseVM.class);
+            examPaperResponseVM.setCreateTime(DateTimeUtil.dateFormat(t.getCreateTime()));
+            return examPaperResponseVM;
+        }).collect(Collectors.toList());
+        return Result.ok(new PageResult<>(list,examPaperIPage.getTotal(),examPaperIPage.getTotal()));
+    }
+
 }

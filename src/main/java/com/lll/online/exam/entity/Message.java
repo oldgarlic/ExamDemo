@@ -1,6 +1,13 @@
 package com.lll.online.exam.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -10,10 +17,12 @@ import java.io.Serializable;
  * @author oldGarlic
  * @since 2021-03-21 00:02:48
  */
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message implements Serializable {
     private static final long serialVersionUID = -35360251711434617L;
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /**
     * 标题
@@ -23,6 +32,7 @@ public class Message implements Serializable {
     * 内容
     */
     private String content;
+
     
     private Date createTime;
     /**

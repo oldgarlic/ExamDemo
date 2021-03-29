@@ -24,4 +24,10 @@
     </resultMap>
 
 
+    <select id="selectNameByUserName" resultType="com.lll.online.exam.entity.other.KeyValue" >
+		SELECT  id as value,user_name as name
+		from t_user
+		where deleted=0  and user_name like concat('%',#{userName},'%')
+		limit 5
+    </select>
 </mapper>

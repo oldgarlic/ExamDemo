@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.entity.enums.UserStatusEnum;
+import com.lll.online.exam.entity.other.KeyValue;
 import com.lll.online.exam.mapper.UserMapper;
 import com.lll.online.exam.service.UserService;
 import com.lll.online.exam.viewmodel.admin.user.UserPageRequestVM;
@@ -84,5 +85,17 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         userMapper.updateById(user);
         return null;
+    }
+
+    @Override
+    public List<KeyValue> selectNameByUserName(String userName) {
+        List<KeyValue> keyValues = userMapper.selectNameByUserName(userName);
+        return keyValues;
+    }
+
+    @Override
+    public List<User> selectUserByIds(List<Integer> receiveUserIds) {
+
+        return userMapper.selectBatchIds(receiveUserIds);
     }
 }

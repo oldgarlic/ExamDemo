@@ -7,6 +7,7 @@ import com.lll.online.exam.base.Result;
 import com.lll.online.exam.entity.TaskExam;
 import com.lll.online.exam.service.TaskExamService;
 import com.lll.online.exam.utility.DateTimeUtil;
+import com.lll.online.exam.viewmodel.admin.taskExam.TaskEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.taskExam.TaskExamPageRequestVM;
 import com.lll.online.exam.viewmodel.admin.taskExam.TaskPageResponseVM;
 import com.lll.online.exam.viewmodel.admin.taskExam.TaskRequestVM;
@@ -28,6 +29,19 @@ import java.util.stream.Collectors;
 public class TaskExamController extends BaseController {
     @Autowired
     private TaskExamService taskExamService;
+    /*
+    * @Description: 修改或新增试卷
+    * @Param: TaskEditRequestVM
+    * @return: Result
+    * @Date: 2021/3/28
+    */
+    @PostMapping("edit")
+    public Result<TaskRequestVM> editOrSave(@RequestBody TaskEditRequestVM model){
+        taskExamService.saveOrEdit(model,getCurrentUser());
+        TaskRequestVM taskRequestVM = taskExamService.taskExamByIdToVM(model.getId());
+        return Result.ok(taskRequestVM);
+    }
+
     /*
     * @Description: TaskExam的分页查询
     * @Param: TaskExamPageRequestVM
@@ -54,7 +68,18 @@ public class TaskExamController extends BaseController {
     @PostMapping("select/{id}")
     public Result<TaskRequestVM> select(@PathVariable Integer id){
         TaskRequestVM vm =taskExamService.taskExamByIdToVM(id);
-
         return Result.ok(vm);
+    }
+
+    /*
+    * @Description: 根据id删除任务
+    * @Param: Integer
+    * @return: Result
+    * @Date: 2021/3/28
+    */
+    @PostMapping("delete/{id}")
+    public Result delete(@PathVariable Integer id){
+        taskExamService.deleteById(id);
+        return Result.ok();
     }
 }

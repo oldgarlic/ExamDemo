@@ -1,7 +1,13 @@
 package com.lll.online.exam.service;
 
 
+import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.entity.Message;
+import com.lll.online.exam.entity.User;
+import com.lll.online.exam.viewmodel.admin.message.MessagePageRequestVM;
+import com.lll.online.exam.viewmodel.admin.message.MessageRequestVM;
+import com.lll.online.exam.viewmodel.admin.message.MessageResponseVM;
+
 import java.util.List;
 
 /**
@@ -14,4 +20,8 @@ public interface MessageService extends BaseService<Message>{
 
 
     Integer unReadCount(Integer id);
+
+    PageResult<MessageResponseVM> pageList(MessagePageRequestVM model);
+
+    void sendMessage(MessageRequestVM model, User currentUser);
 }

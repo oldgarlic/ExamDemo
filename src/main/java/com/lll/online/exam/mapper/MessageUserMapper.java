@@ -18,4 +18,5 @@ import java.util.List;
 public interface MessageUserMapper extends BaseMapper<MessageUser> {
 
 
+    void insertList(List<MessageUser> list);
 }

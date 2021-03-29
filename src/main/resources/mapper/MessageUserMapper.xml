@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lll.online.exam.mapper.MessageUserMapper">
+
+    <resultMap type="com.lll.online.exam.entity.MessageUser" id="MessageUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="messageId" column="message_id" jdbcType="INTEGER"/>
+        <result property="receiveUserId" column="receive_user_id" jdbcType="INTEGER"/>
+        <result property="receiveUserName" column="receive_user_name" jdbcType="VARCHAR"/>
+        <result property="receiveRealName" column="receive_real_name" jdbcType="VARCHAR"/>
+        <result property="readed" column="readed" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="readTime" column="read_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--什么鸡毛玩意 collection="list" 值一定要list-->
+    <insert id="insertList" parameterType="java.util.List"  useGeneratedKeys="true" >
+      insert into t_message_user (message_id, receive_user_id,
+        receive_user_name, receive_real_name, readed,create_time)values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.messageId,jdbcType=INTEGER}, #{item.receiveUserId,jdbcType=INTEGER},
+            #{item.receiveUserName,jdbcType=VARCHAR}, #{item.receiveRealName,jdbcType=VARCHAR},
+            #{item.readed,jdbcType=BIT},#{item.createTime,jdbcType=TIMESTAMP}
+             )
+        </foreach>
+    </insert>
+</mapper>

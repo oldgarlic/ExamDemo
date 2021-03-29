@@ -31,6 +31,7 @@ public class TaskExam implements Serializable {
     /**
     * 任务框架 内容为JSON
     */
+
     private Integer frameTextContentId;
     
     private Integer createUser;

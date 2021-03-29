@@ -3,6 +3,7 @@ package com.lll.online.exam.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.entity.User;
+import com.lll.online.exam.entity.other.KeyValue;
 import com.lll.online.exam.viewmodel.admin.user.UserPageRequestVM;
 import com.lll.online.exam.viewmodel.admin.user.UserResponseVM;
 
@@ -25,4 +26,7 @@ public interface UserService extends BaseService<User>{
 
     Integer changeStatus(Integer id);
 
+    List<KeyValue> selectNameByUserName(String userName);
+
+    List<User> selectUserByIds(List<Integer> receiveUserIds);
 }
