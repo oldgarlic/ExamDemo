@@ -1,19 +1,27 @@
 package com.lll.online.exam.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 import java.io.Serializable;
 
 /**
- * (ExamPaperAnswer)实体类
+ * (ExamPaperAnswer)实体类：一份试卷答案对应一个ExamPaperAnswer
  *
  * @author oldGarlic
  * @since 2021-03-22 15:25:24
  */
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExamPaperAnswer implements Serializable {
     private static final long serialVersionUID = 279020315605308585L;
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     
     private Integer examPaperId;

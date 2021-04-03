@@ -30,4 +30,5 @@ public interface QuestionService extends BaseService<Question>{
 
     QuestionEditRequestVM getQuestionEditRequestVM(Integer id);
 
+    List<Question> selectByIds(List<Integer> ids);
 }

@@ -1,6 +1,12 @@
 package com.lll.online.exam.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 import java.io.Serializable;
 
@@ -10,10 +16,12 @@ import java.io.Serializable;
  * @author oldGarlic
  * @since 2021-03-22 15:25:24
  */
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExamPaperQuestionCustomerAnswer implements Serializable {
     private static final long serialVersionUID = 980907393017253080L;
-    
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /**
     * 题目Id
@@ -56,7 +64,7 @@ public class ExamPaperQuestionCustomerAnswer implements Serializable {
     /**
     * 是否正确
     */
-    private Object doRight;
+    private Boolean doRight;
     /**
     * 做题人
     */

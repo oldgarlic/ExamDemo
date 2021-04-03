@@ -29,4 +29,20 @@
         ) a
         GROUP BY create_time
     </select>
+
+    <insert id="insertList" >
+        insert into t_exam_paper_question_customer_answer(
+          question_id, exam_paper_id, exam_paper_answer_id, question_type, subject_id, customer_score, question_score,
+           question_text_content_id, answer, text_content_id, do_right, create_user, create_time, item_order
+        )values
+        <foreach collection="list" separator="," item="item" index="item">
+            ( #{item.questionId,jdbcType=INTEGER}, #{item.examPaperId,jdbcType=INTEGER},#{item.examPaperAnswerId,jdbcType=INTEGER},
+            #{item.questionType,jdbcType=INTEGER}, #{item.subjectId,jdbcType=INTEGER},#{item.customerScore,jdbcType=INTEGER},
+            #{item.questionScore,jdbcType=INTEGER},#{item.questionTextContentId,jdbcType=INTEGER},#{item.answer,jdbcType=VARCHAR},
+            #{item.textContentId,jdbcType=INTEGER},#{item.doRight,jdbcType=BIT},#{item.createUser,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.itemOrder,jdbcType=INTEGER})
+        </foreach>
+
+    </insert>
 </mapper>

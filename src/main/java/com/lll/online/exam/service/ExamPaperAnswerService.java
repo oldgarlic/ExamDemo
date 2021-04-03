@@ -1,7 +1,10 @@
 package com.lll.online.exam.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lll.online.exam.entity.ExamPaperAnswer;
+import com.lll.online.exam.viewmodel.student.exampaper.ExamPaperAnswerPageVM;
+
 import java.util.List;
 
 /**
@@ -12,5 +15,9 @@ import java.util.List;
  */
 public interface ExamPaperAnswerService extends BaseService<ExamPaperAnswer>{
 
+    ExamPaperAnswer selectByPidUid(Integer pid, Integer uid);
+
     Integer getAllCount();
+
+    IPage<ExamPaperAnswer> pageList(ExamPaperAnswerPageVM model);
 }

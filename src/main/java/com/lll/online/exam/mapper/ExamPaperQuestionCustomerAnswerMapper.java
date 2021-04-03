@@ -21,4 +21,6 @@ public interface ExamPaperQuestionCustomerAnswerMapper extends BaseMapper<ExamPa
 
 
     List<KeyValue> selectCountByDate(Date startDate,Date endDate);
+
+    void insertList(List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers);
 }

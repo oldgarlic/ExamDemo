@@ -148,4 +148,12 @@ public class TaskExamServiceImpl extends BaseServiceImpl<TaskExam> implements Ta
         taskExam.setDeleted(true);
         taskExamMapper.updateById(taskExam);
     }
+
+    @Override
+    public List<TaskExam> selectByGradeLevel(Integer userLevel) {
+        QueryWrapper<TaskExam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("grade_level",userLevel);
+        List<TaskExam> taskExams = taskExamMapper.selectList(queryWrapper);
+        return taskExams;
+    }
 }

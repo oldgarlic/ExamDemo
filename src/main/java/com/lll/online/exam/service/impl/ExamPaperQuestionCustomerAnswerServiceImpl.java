@@ -57,4 +57,9 @@ public class ExamPaperQuestionCustomerAnswerServiceImpl extends BaseServiceImpl<
 
         return result;
     }
+
+    @Override
+    public void insertList(List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers) {
+        examPaperQuestionCustomerAnswerMapper.insertList(examPaperQuestionCustomerAnswers);
+    }
 }

@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
- * 试卷细节类
+ * 试卷细节类：需要从ExamPaper中的text_content_id去查询textContent表转换
  *
  * @author ：Mr.Garlic
  * @date ： 2021/3/27
@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExamPaperTitleItemVM {
+
     @NotBlank(message = "标题名称不能为空")
     private String name;
     @Valid

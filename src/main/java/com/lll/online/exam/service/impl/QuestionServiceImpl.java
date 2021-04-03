@@ -223,4 +223,10 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
 
         return questionEditRequestVM;
     }
+
+    @Override
+    public List<Question> selectByIds(List<Integer> ids) {
+
+        return questionMapper.selectBatchIds(ids);
+    }
 }

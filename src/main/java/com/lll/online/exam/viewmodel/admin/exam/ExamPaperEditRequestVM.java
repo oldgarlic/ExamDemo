@@ -24,7 +24,7 @@ public class ExamPaperEditRequestVM {
     private Integer id;
     @NotNull
     private Integer level;
-
+    // 需进行转换 ["startTime","endTime"]
     private List<String> limitDateTime;
     @NotBlank
     private String name;
@@ -35,7 +35,10 @@ public class ExamPaperEditRequestVM {
     @NotNull
     private Integer paperType;
 
+    // 需转换
     @Valid
     @Size(min = 1,message = "请添加试卷标题")
     private List<ExamPaperTitleItemVM> titleItems;
+
+    private String score;
 }

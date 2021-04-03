@@ -10,6 +10,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+/**
+ * 问题细节类：从TextContent的中questionItems.id来查询封装
+ *
+ * @author: Mr.Garlic
+ * @date: 2021/3/29
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

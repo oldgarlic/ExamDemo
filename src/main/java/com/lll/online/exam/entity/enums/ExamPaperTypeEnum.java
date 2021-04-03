@@ -1,5 +1,8 @@
 package com.lll.online.exam.entity.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 试卷类型枚举
  *
@@ -25,4 +28,17 @@ public enum ExamPaperTypeEnum {
 
     public String getName() {
         return name;
-    }}
+    }
+
+    private static final Map<Integer, ExamPaperTypeEnum> keyMap = new HashMap<>();
+
+    static {
+        for (ExamPaperTypeEnum item : ExamPaperTypeEnum.values()) {
+            keyMap.put(item.getCode(), item);
+        }
+    }
+
+    public static ExamPaperTypeEnum fromCode(Integer code) {
+        return keyMap.get(code);
+    }
+}

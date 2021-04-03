@@ -5,13 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lll.online.exam.entity.ExamPaper;
-import com.lll.online.exam.entity.TextContent;
-import com.lll.online.exam.entity.User;
+import com.lll.online.exam.entity.*;
 import com.lll.online.exam.entity.enums.ActionEnum;
+import com.lll.online.exam.entity.enums.ExamPaperAnswerStatusEnum;
 import com.lll.online.exam.entity.enums.ExamPaperTypeEnum;
+import com.lll.online.exam.entity.enums.QuestionTypeEnum;
+import com.lll.online.exam.mapper.ExamPaperAnswerMapper;
 import com.lll.online.exam.mapper.ExamPaperMapper;
 import com.lll.online.exam.mapper.TextContentMapper;
+import com.lll.online.exam.service.ExamPaperAnswerService;
 import com.lll.online.exam.service.ExamPaperService;
 import com.lll.online.exam.service.QuestionService;
 import com.lll.online.exam.service.TextContentService;
@@ -21,6 +23,10 @@ import com.lll.online.exam.utility.JsonUtil;
 import com.lll.online.exam.utility.ModelMapperUtil;
 import com.lll.online.exam.viewmodel.admin.exam.*;
 import com.lll.online.exam.viewmodel.admin.question.QuestionEditRequestVM;
+import com.lll.online.exam.viewmodel.student.dashboard.PaperFilter;
+import com.lll.online.exam.viewmodel.student.dashboard.PaperInfo;
+import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitItemVM;
+import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitVM;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +57,15 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
     private final ModelMapper modelMapper = ModelMapperUtil.instance();
     private TextContentService textContentService;
     private QuestionService questionService;
+    private ExamPaperAnswerService examPaperAnswerService;
 
     @Autowired
-    public ExamPaperServiceImpl( QuestionService questionService,ExamPaperMapper examPaperMapper,TextContentService textContentService) {
+    public ExamPaperServiceImpl(ExamPaperAnswerService examPaperAnswerService, QuestionService questionService,ExamPaperMapper examPaperMapper,TextContentService textContentService) {
         super(examPaperMapper);
         this.examPaperMapper = examPaperMapper;
         this.textContentService = textContentService;
         this.questionService = questionService;
+        this.examPaperAnswerService = examPaperAnswerService;
     }
 
     /*
@@ -139,12 +147,13 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
         TextContent textContent = textContentService.selectById(examPaper.getFrameTextContentId());
         ExamPaperEditRequestVM examPaperEditRequestVM = modelMapper.map(examPaper, ExamPaperEditRequestVM.class);
         examPaperEditRequestVM.setLevel(examPaper.getGradeLevel());
+        examPaperEditRequestVM.setScore(ExamUtil.scoreToVM(examPaper.getScore()));
 
         if(examPaper.getPaperType()==ExamPaperTypeEnum.TimeLimit.getCode()){
             List<String> list = Arrays.asList(DateTimeUtil.dateFormat(examPaper.getLimitStartTime()), DateTimeUtil.dateFormat(examPaper.getLimitEndTime()));
             examPaperEditRequestVM.setLimitDateTime(list);
         }
-        // 这里出问题了？？？？ String转List对象
+
         // TextContent中的jsonString已 ExamPaperTitleItemObject 形式保存
         List<ExamPaperTitleItemObject> examPaperTitleItemObjects = JsonUtil.toJsonListObject(textContent.getContent(), ExamPaperTitleItemObject.class);
 
@@ -206,6 +215,142 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
         return examPaperIPage;
     }
 
+    @Override
+    public List<PaperInfo> selectPaperInfo(PaperFilter paperFilter) {
+        QueryWrapper<ExamPaper> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("paper_type",paperFilter.getPaperType()).eq("grade_level",paperFilter.getGradeLevel());
+        List<ExamPaper> examPapers = examPaperMapper.selectList(queryWrapper);
+
+        List<PaperInfo> paperInfos = examPapers.stream().map(t -> {
+            PaperInfo paperInfo = modelMapper.map(t, PaperInfo.class);
+
+            return paperInfo;
+        }).collect(Collectors.toList());
+
+        return paperInfos;
+    }
+
+    @Transactional
+    @Override
+    public ExamPaperAnswerInfo calculateExamPaperAnswer(ExamPaperSubmitVM examPaperSubmitVM, User user) {
+        // TODO：目的就是填满ExamPaperAnswerInfo的三个属性
+        ExamPaperAnswerInfo examPaperAnswerInfo = new ExamPaperAnswerInfo();
+        Date now = new Date();
+
+        // 1. 设置ExamPaper
+        ExamPaper examPaper = examPaperMapper.selectById(examPaperSubmitVM.getId());
+        ExamPaperTypeEnum examPaperTypeEnum = ExamPaperTypeEnum.fromCode(examPaper.getPaperType());
+        // 如果过是任务试卷，根据试卷Id和用户Id查看是否已经做了
+        if(examPaperTypeEnum == ExamPaperTypeEnum.Task){
+            ExamPaperAnswer examPaperAnswer = examPaperAnswerService.selectByPidUid(examPaperSubmitVM.getId(), user.getId());
+            if(examPaperAnswer!=null){return null;}
+        }
+        examPaperAnswerInfo.setExamPaper(examPaper);
+
+        // 2. 设置List<ExamPaperQuestionCustomerAnswer>
+        TextContent textContent = textContentService.selectById(examPaper.getFrameTextContentId());
+        List<ExamPaperTitleItemObject> examPaperTitleItemObjects = JsonUtil.toJsonListObject(textContent.getContent(), ExamPaperTitleItemObject.class);
+        List<Integer> questionIds = examPaperTitleItemObjects.stream().flatMap(t -> t.getQuestionItems().stream().map(m -> m.getId())).collect(Collectors.toList());
+        List<Question> questions = questionService.selectByIds(questionIds);
+        // 转化为题目答案
+        List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers = examPaperTitleItemObjects.stream()
+                .flatMap(t -> t.getQuestionItems().stream().map(m -> {
+                    Question question = questions.stream().filter(md -> md.getId().equals(m.getId())).findFirst().get();
+
+                    ExamPaperSubmitItemVM examPaperSubmitItemVM = examPaperSubmitVM.getAnswerItems().stream()
+                            .filter(tm -> tm.getQuestionId().equals(m.getId())).findFirst().orElse(null);
+                    // TODO：未完待续
+                    return createExamPaperQuestionCustomerAnswer(question, examPaperSubmitItemVM, examPaper, m.getItemOrder(), now, user);
+                })).collect(Collectors.toList());
+        examPaperAnswerInfo.setExamPaperQuestionCustomerAnswers(examPaperQuestionCustomerAnswers);
+
+        // 3. 设置ExamPaperAnswer
+        ExamPaperAnswer examPaperAnswer = ExamPaperAnswerFromVM(examPaperSubmitVM, examPaper, examPaperQuestionCustomerAnswers, user, now);
+        examPaperAnswerInfo.setExamPaperAnswer(examPaperAnswer);
+        return examPaperAnswerInfo;
+    }
+
+    private ExamPaperAnswer ExamPaperAnswerFromVM(ExamPaperSubmitVM examPaperSubmitVM, ExamPaper examPaper, List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers, User user, Date now) {
+        Integer systemScore = examPaperQuestionCustomerAnswers.stream().mapToInt(a -> a.getCustomerScore()).sum();
+        long questionCorrect = examPaperQuestionCustomerAnswers.stream().filter(a -> a.getCustomerScore().equals(a.getQuestionScore())).count();
+        ExamPaperAnswer examPaperAnswer = new ExamPaperAnswer();
+        examPaperAnswer.setPaperName(examPaper.getName());
+        examPaperAnswer.setDoTime(examPaperSubmitVM.getDoTime());
+        examPaperAnswer.setExamPaperId(examPaper.getId());
+        examPaperAnswer.setCreateUser(user.getId());
+        examPaperAnswer.setCreateTime(now);
+        examPaperAnswer.setSubjectId(examPaper.getSubjectId());
+        examPaperAnswer.setQuestionCount(examPaper.getQuestionCount());
+        examPaperAnswer.setPaperScore(examPaper.getScore());
+        examPaperAnswer.setPaperType(examPaper.getPaperType());
+        examPaperAnswer.setSystemScore(systemScore);
+        examPaperAnswer.setUserScore(systemScore);
+        examPaperAnswer.setTaskExamId(examPaper.getTaskExamId());
+        examPaperAnswer.setQuestionCorrect((int) questionCorrect);
+        boolean needJudge = examPaperQuestionCustomerAnswers.stream().anyMatch(d -> QuestionTypeEnum.needSaveTextContent(d.getQuestionType()));
+
+        if (needJudge) {
+            examPaperAnswer.setStatus(ExamPaperAnswerStatusEnum.WaitJudge.getCode());
+        } else {
+            examPaperAnswer.setStatus(ExamPaperAnswerStatusEnum.Complete.getCode());
+        }
+        return examPaperAnswer;
+    }
+
+    private ExamPaperQuestionCustomerAnswer createExamPaperQuestionCustomerAnswer(Question question, ExamPaperSubmitItemVM examPaperSubmitItemVM,
+                                                                                  ExamPaper examPaper, Integer itemOrder, Date now, User user) {
+        ExamPaperQuestionCustomerAnswer examPaperQuestionCustomerAnswer = new ExamPaperQuestionCustomerAnswer();
+
+        examPaperQuestionCustomerAnswer.setQuestionId(question.getId());
+        examPaperQuestionCustomerAnswer.setExamPaperId(examPaper.getId());
+        examPaperQuestionCustomerAnswer.setQuestionScore(question.getScore());
+        examPaperQuestionCustomerAnswer.setSubjectId(examPaper.getSubjectId());
+        examPaperQuestionCustomerAnswer.setItemOrder(itemOrder);
+        examPaperQuestionCustomerAnswer.setCreateTime(now);
+        examPaperQuestionCustomerAnswer.setCreateUser(user.getId());
+        examPaperQuestionCustomerAnswer.setQuestionType(question.getQuestionType());
+        examPaperQuestionCustomerAnswer.setQuestionTextContentId(question.getInfoTextContentId());
+
+        if (null == examPaperSubmitItemVM) {
+            examPaperQuestionCustomerAnswer.setCustomerScore(0);
+        } else {
+            setSpecialFromVM(examPaperQuestionCustomerAnswer, question, examPaperSubmitItemVM);
+        }
+        return examPaperQuestionCustomerAnswer;
+    }
+    /**
+     * 判断提交答案是否正确，保留用户提交的答案
+     *
+     * @param examPaperQuestionCustomerAnswer examPaperQuestionCustomerAnswer
+     * @param question                        question
+     * @param customerQuestionAnswer          customerQuestionAnswer
+     */
+    private void setSpecialFromVM(ExamPaperQuestionCustomerAnswer examPaperQuestionCustomerAnswer, Question question, ExamPaperSubmitItemVM customerQuestionAnswer) {
+        QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.getQuestionTypeEnum(examPaperQuestionCustomerAnswer.getQuestionType());
+        switch (questionTypeEnum) {
+            case SingleChoice:
+            case TrueFalse:
+                examPaperQuestionCustomerAnswer.setAnswer(customerQuestionAnswer.getContent());
+                examPaperQuestionCustomerAnswer.setDoRight(question.getCorrect().equals(customerQuestionAnswer.getContent()));
+                examPaperQuestionCustomerAnswer.setCustomerScore(examPaperQuestionCustomerAnswer.getDoRight() ? question.getScore() : 0);
+                break;
+            case MultipleChoice:
+                String customerAnswer = ExamUtil.contentToString(customerQuestionAnswer.getContentArray());
+                examPaperQuestionCustomerAnswer.setAnswer(customerAnswer);
+                examPaperQuestionCustomerAnswer.setDoRight(customerAnswer.equals(question.getCorrect()));
+                examPaperQuestionCustomerAnswer.setCustomerScore(examPaperQuestionCustomerAnswer.getDoRight() ? question.getScore() : 0);
+                break;
+            case GapFilling:
+                String correctAnswer = JsonUtil.toJsonStr(customerQuestionAnswer.getContentArray());
+                examPaperQuestionCustomerAnswer.setAnswer(correctAnswer);
+                examPaperQuestionCustomerAnswer.setCustomerScore(0);
+                break;
+            default:
+                examPaperQuestionCustomerAnswer.setAnswer(customerQuestionAnswer.getContent());
+                examPaperQuestionCustomerAnswer.setCustomerScore(0);
+                break;
+        }
+    }
     /*
     * @Description: 精简List<ExamPaperTitleItemVM>信息
     * @Date: 2021/3/27

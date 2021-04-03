@@ -25,6 +25,17 @@ public enum  QuestionTypeEnum {
     int code;
     String name;
 
+    public static boolean needSaveTextContent(Integer code) {
+        QuestionTypeEnum questionTypeEnum = QuestionTypeEnum.getQuestionTypeEnum(code);
+        switch (questionTypeEnum) {
+            case GapFilling:
+            case ShortAnswer:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static final HashMap<Integer,QuestionTypeEnum> MAP = new HashMap<>();
 
     public int getCode() {

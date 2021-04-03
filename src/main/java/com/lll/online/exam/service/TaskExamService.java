@@ -7,6 +7,8 @@ import com.lll.online.exam.viewmodel.admin.taskExam.TaskEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.taskExam.TaskExamPageRequestVM;
 import com.lll.online.exam.viewmodel.admin.taskExam.TaskRequestVM;
 
+import java.util.List;
+
 /**
  * (TaskExam)表服务接口
  *
@@ -24,4 +26,5 @@ public interface TaskExamService extends BaseService<TaskExam>{
 
     void deleteById(Integer id);
 
+    List<TaskExam> selectByGradeLevel(Integer userLevel);
 }

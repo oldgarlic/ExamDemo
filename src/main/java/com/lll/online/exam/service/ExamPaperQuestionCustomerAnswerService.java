@@ -16,4 +16,6 @@ public interface ExamPaperQuestionCustomerAnswerService extends BaseService<Exam
     Integer getAllCount();
 
     List<Integer> getMonthCount();
+
+    void insertList(List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers);
 }
