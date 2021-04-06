@@ -1,6 +1,6 @@
 package com.lll.online.exam.base;
 
-import com.lll.online.exam.content.WebContent;
+import com.lll.online.exam.content.WebContext;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.utility.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class BaseController {
     @Autowired
-    protected WebContent webContent;
+    protected WebContext webContext;
 
     protected final static ModelMapper modelMapper = ModelMapperUtil.instance();
 
     public User getCurrentUser(){
-        return webContent.getCurrentUser();
+        return webContext.getCurrentUser();
     }
 }

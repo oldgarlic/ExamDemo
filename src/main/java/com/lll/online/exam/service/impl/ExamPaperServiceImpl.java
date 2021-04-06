@@ -10,9 +10,9 @@ import com.lll.online.exam.entity.enums.ActionEnum;
 import com.lll.online.exam.entity.enums.ExamPaperAnswerStatusEnum;
 import com.lll.online.exam.entity.enums.ExamPaperTypeEnum;
 import com.lll.online.exam.entity.enums.QuestionTypeEnum;
-import com.lll.online.exam.mapper.ExamPaperAnswerMapper;
+import com.lll.online.exam.entity.exam.ExamPaperQuestionItemObject;
+import com.lll.online.exam.entity.exam.ExamPaperTitleItemObject;
 import com.lll.online.exam.mapper.ExamPaperMapper;
-import com.lll.online.exam.mapper.TextContentMapper;
 import com.lll.online.exam.service.ExamPaperAnswerService;
 import com.lll.online.exam.service.ExamPaperService;
 import com.lll.online.exam.service.QuestionService;
@@ -25,19 +25,14 @@ import com.lll.online.exam.viewmodel.admin.exam.*;
 import com.lll.online.exam.viewmodel.admin.question.QuestionEditRequestVM;
 import com.lll.online.exam.viewmodel.student.dashboard.PaperFilter;
 import com.lll.online.exam.viewmodel.student.dashboard.PaperInfo;
+import com.lll.online.exam.viewmodel.student.exam.ExamPaperPageVM;
 import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitItemVM;
 import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitVM;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
-import javax.xml.crypto.Data;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -270,6 +265,68 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
         return examPaperAnswerInfo;
     }
 
+    @Override
+    public IPage<ExamPaper> studentPageList(ExamPaperPageVM model) {
+        Page<ExamPaper> page = new Page<>(model.getPageIndex(), model.getPageSize());
+        QueryWrapper<ExamPaper> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("paper_type",model.getPaperType());
+        if(model.getLevelId()!=null){
+            queryWrapper.eq("grade_level",model.getLevelId());
+        }
+        if(model.getSubjectId()!=null){
+            queryWrapper.eq("subject_id",model.getSubjectId());
+        }
+        IPage<ExamPaper> examPaperIPage = examPaperMapper.selectPage(page, queryWrapper);
+        return examPaperIPage;
+    }
+
+    @Override
+    public ExamPaperEditRequestVM examPaperToVM(Integer id) {
+        // 根据paperId去查ExamPaper
+        ExamPaper examPaper = examPaperMapper.selectById(id);
+        ExamPaperEditRequestVM vm = modelMapper.map(examPaper, ExamPaperEditRequestVM.class);
+        vm.setLevel(examPaper.getGradeLevel());
+
+        // 根据frameTextContentId去得到question集合，它是以ExamPaperTitleItemObject的json形式写入数据库
+        TextContent textContent = textContentService.selectById(examPaper.getFrameTextContentId());
+        List<ExamPaperTitleItemObject> examPaperTitleItemObjects = JsonUtil.toJsonListObject(textContent.getContent(), ExamPaperTitleItemObject.class);
+
+        // 得到question的ids
+        List<Integer> questionIds = examPaperTitleItemObjects.stream()
+                .flatMap(t -> t.getQuestionItems().stream()
+                        .map(q -> q.getId()))
+                .collect(Collectors.toList());
+        // 获得子结果
+        List<Question> questions = questionService.selectByIds(questionIds);
+        //
+        List<ExamPaperTitleItemVM> examPaperTitleItemVMS = examPaperTitleItemObjects.stream().map(t -> {
+
+            ExamPaperTitleItemVM tTitleVM = modelMapper.map(t, ExamPaperTitleItemVM.class);
+
+            List<QuestionEditRequestVM> questionItemsVM = t.getQuestionItems().stream().map(i -> {
+                // 找到对应的Id,这里直接获得不可以嘛，不是同一妈生的？？？
+                Question question = questions.stream().filter(q -> q.getId().equals(i.getId())).findFirst().get();
+                QuestionEditRequestVM questionEditRequestVM = questionService.getQuestionEditRequestVM(question.getId());
+                questionEditRequestVM.setItemOrder(i.getItemOrder());
+
+                return questionEditRequestVM;
+            }).collect(Collectors.toList());
+
+            tTitleVM.setQuestionItems(questionItemsVM);
+            return tTitleVM;
+        }).collect(Collectors.toList());
+
+        vm.setTitleItems(examPaperTitleItemVMS);
+        vm.setScore(ExamUtil.scoreToVM(examPaper.getScore()));
+        // 如果是时段试卷
+        if (ExamPaperTypeEnum.TimeLimit == ExamPaperTypeEnum.fromCode(examPaper.getPaperType())) {
+            List<String> limitDateTime = Arrays.asList(DateTimeUtil.dateFormat(examPaper.getLimitStartTime()), DateTimeUtil.dateFormat(examPaper.getLimitEndTime()));
+            vm.setLimitDateTime(limitDateTime);
+        }
+        return vm;
+
+    }
+
     private ExamPaperAnswer ExamPaperAnswerFromVM(ExamPaperSubmitVM examPaperSubmitVM, ExamPaper examPaper, List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers, User user, Date now) {
         Integer systemScore = examPaperQuestionCustomerAnswers.stream().mapToInt(a -> a.getCustomerScore()).sum();
         long questionCorrect = examPaperQuestionCustomerAnswers.stream().filter(a -> a.getCustomerScore().equals(a.getQuestionScore())).count();
@@ -392,18 +449,4 @@ public class ExamPaperServiceImpl extends BaseServiceImpl<ExamPaper> implements 
 
     }
 
-    public static void main(String[] args) {
-        ArrayList<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        //map方法接受一个lambda表达式,对每个数据执行这个表达式
-        int sum = list.stream().mapToInt(t -> {
-            return t;
-        }).sum();
-        System.out.println(sum);
-
-
-    }
 }

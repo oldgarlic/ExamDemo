@@ -2,6 +2,7 @@ package com.lll.online.exam.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -116,6 +117,43 @@ public class MessageServiceImpl extends BaseServiceImpl<Message> implements Mess
         // 批量插入
         insertList(messageUsers);
 
+    }
+
+    @Override
+    public PageResult<com.lll.online.exam.viewmodel.student.message.MessageResponseVM> studentPage(com.lll.online.exam.viewmodel.student.message.MessageRequestVM messageRequestVM) {
+        Page<MessageUser> messageUserPage = new Page<>(messageRequestVM.getPageIndex(), messageRequestVM.getPageSize());
+        QueryWrapper<MessageUser> queryWrapper = new QueryWrapper<>();
+        if(messageRequestVM.getReceiveUserId()!=null){
+            queryWrapper.eq("receive_user_id",messageRequestVM.getReceiveUserId());
+        }
+        IPage<MessageUser> messageUserIPage = messageUserMapper.selectPage(messageUserPage, queryWrapper);
+
+        List<com.lll.online.exam.viewmodel.student.message.MessageResponseVM> data = messageUserIPage.getRecords().stream().map(t -> {
+            com.lll.online.exam.viewmodel.student.message.MessageResponseVM vm = modelMapper.map(t, com.lll.online.exam.viewmodel.student.message.MessageResponseVM.class);
+            Message message = messageMapper.selectById(t.getMessageId());
+            vm.setContent(message.getContent());
+            vm.setCreateTime(DateTimeUtil.dateFormat(t.getCreateTime()));
+            vm.setSendUserName(message.getSendUserName());
+            vm.setTitle(message.getTitle());
+            return vm;
+        }).collect(Collectors.toList());
+
+        return new PageResult<>(data,messageUserIPage.getTotal(),messageUserIPage.getTotal());
+    }
+    @Transactional
+    @Override
+    public void readMessage(Integer id, User user) {
+        // TODO：给t_message和t_message_user表进行数据更新
+        // TODO：t_message_user更新readed和read_time字段，t_message更新read_count字段
+        Date now = new Date();
+        UpdateWrapper<MessageUser> messageUserUpdateWrapper = new UpdateWrapper<>();
+        messageUserUpdateWrapper.set("readed",true).set("read_time",now).eq("receive_user_id",user.getId()).eq("id",id);
+        messageUserMapper.update(null,messageUserUpdateWrapper);
+
+
+        UpdateWrapper<Message> messageUpdateWrapper = new UpdateWrapper<>();
+        messageUpdateWrapper.eq("id",messageUserMapper.selectById(id).getMessageId()).setSql("read_count = read_count+1");
+        messageMapper.update(null,messageUpdateWrapper);
     }
 
     private void insertList(List<MessageUser> messageUsers){

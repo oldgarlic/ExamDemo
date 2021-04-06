@@ -17,4 +17,6 @@ public interface TaskExamCustomerAnswerService extends BaseService<TaskExamCusto
 
 
     void insertOrUpdate(ExamPaper examPaper, ExamPaperAnswer examPaperAnswer, Date now);
+
+    TaskExamCustomerAnswer getByTidUid(Integer taskId, Integer userId);
 }

@@ -73,9 +73,6 @@ public class User implements Serializable {
     * 是否删除
     */
     private Boolean deleted;
-    /**
-    * 微信openId
-    */
-    private String wxOpenId;
+
 
 }

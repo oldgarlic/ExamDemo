@@ -25,4 +25,6 @@ public interface SubjectService extends BaseService<Subject>{
     Integer deleteById(Integer id);
 
     List<Subject> selectAllSubject();
+
+    List<Subject> selectByLevel(Integer userLevel);
 }

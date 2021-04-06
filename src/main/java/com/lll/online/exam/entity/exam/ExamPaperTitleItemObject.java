@@ -1,10 +1,10 @@
-package com.lll.online.exam.viewmodel.admin.exam;
+package com.lll.online.exam.entity.exam;
 
+import com.lll.online.exam.entity.exam.ExamPaperQuestionItemObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data

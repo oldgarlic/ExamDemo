@@ -5,6 +5,7 @@ import com.lll.online.exam.base.BaseController;
 import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.entity.*;
+import com.lll.online.exam.entity.enums.ExamPaperAnswerStatusEnum;
 import com.lll.online.exam.event.CalculateExamPaperAnswerCompleteEvent;
 import com.lll.online.exam.event.UserEvent;
 import com.lll.online.exam.service.ExamPaperAnswerService;
@@ -12,18 +13,18 @@ import com.lll.online.exam.service.ExamPaperService;
 import com.lll.online.exam.service.SubjectService;
 import com.lll.online.exam.utility.DateTimeUtil;
 import com.lll.online.exam.utility.ExamUtil;
+import com.lll.online.exam.viewmodel.admin.exam.ExamPaperEditRequestVM;
 import com.lll.online.exam.viewmodel.admin.exam.ExamPaperResponseVM;
+import com.lll.online.exam.viewmodel.student.exam.ExamPaperReadVM;
 import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitVM;
 import com.lll.online.exam.viewmodel.student.exampaper.ExamPaperAnswerPageResponseVM;
 import com.lll.online.exam.viewmodel.student.exampaper.ExamPaperAnswerPageVM;
 import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +47,53 @@ public class ExamPaperAnswerController extends BaseController {
     private ExamPaperAnswerService examPaperAnswerService;
     @Autowired
     private SubjectService subjectService;
+
+    /*
+    * @Description: 批改试卷
+    * @Param: ExamPaperSubmitVM
+    * @return: Result
+    * @Date: 2021/4/4
+    */
+    @PostMapping("edit")
+    public Result edit(@RequestBody @Valid ExamPaperSubmitVM examPaperSubmitVM){
+        boolean notJudge = examPaperSubmitVM.getAnswerItems().stream().anyMatch(i -> i.getDoRight() == null && i.getScore() == null);
+        if (notJudge) {
+            return Result.fail(2, "有未批改题目");
+        }
+
+        ExamPaperAnswer examPaperAnswer = examPaperAnswerService.selectById(examPaperSubmitVM.getId());
+        ExamPaperAnswerStatusEnum examPaperAnswerStatusEnum = ExamPaperAnswerStatusEnum.fromCode(examPaperAnswer.getStatus());
+        if (examPaperAnswerStatusEnum == ExamPaperAnswerStatusEnum.Complete) {
+            return Result.fail(3, "试卷已完成");
+        }
+        String score = examPaperAnswerService.judge(examPaperSubmitVM);
+        User user = getCurrentUser();
+        UserEventLog userEventLog = new UserEventLog(user.getId(), user.getUserName(), user.getRealName(), new Date());
+        String content = user.getUserName() + " 批改试卷：" + examPaperAnswer.getPaperName() + " 得分：" + score;
+        userEventLog.setContent(content);
+        eventPublisher.publishEvent(new UserEvent(userEventLog));
+        return Result.ok(score);
+    }
+
+
+    /*
+    * @Description: 阅读答卷
+    * @Param: Integer
+    * @return: Result<ExamPaperReadVM>
+    * @Date: 2021/4/4
+    */
+    @PostMapping("read/{id}")
+    public Result<ExamPaperReadVM> read(@PathVariable Integer id){
+        ExamPaperAnswer examPaperAnswer = examPaperAnswerService.selectById(id);
+        ExamPaperReadVM examPaperReadVM = new ExamPaperReadVM();
+
+        ExamPaperEditRequestVM paper = examPaperService.examPaperToVM(examPaperAnswer.getExamPaperId());
+        ExamPaperSubmitVM answer = examPaperAnswerService.examPaperAnswerToVM(examPaperAnswer.getId());
+        examPaperReadVM.setAnswer(answer);
+        examPaperReadVM.setPaper(paper);
+
+        return Result.ok(examPaperReadVM);
+    }
 
     /*
      * @Description: 做试卷
@@ -78,7 +126,7 @@ public class ExamPaperAnswerController extends BaseController {
     @PostMapping("pageList")
     public Result<PageResult<ExamPaperAnswerPageResponseVM>> pageList(@RequestBody ExamPaperAnswerPageVM model){
         model.setCreateUser(getCurrentUser().getId());
-        IPage<ExamPaperAnswer> pageInfo = examPaperAnswerService.pageList(model);
+        IPage<ExamPaperAnswer> pageInfo = examPaperAnswerService.studentPage(model);
 
         List<ExamPaperAnswerPageResponseVM> data = pageInfo.getRecords().stream().map(t -> {
             ExamPaperAnswerPageResponseVM examPaperAnswerPageResponseVM = modelMapper.map(t, ExamPaperAnswerPageResponseVM.class);

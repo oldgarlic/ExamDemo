@@ -24,4 +24,8 @@ public interface MessageService extends BaseService<Message>{
     PageResult<MessageResponseVM> pageList(MessagePageRequestVM model);
 
     void sendMessage(MessageRequestVM model, User currentUser);
+
+    PageResult<com.lll.online.exam.viewmodel.student.message.MessageResponseVM> studentPage(com.lll.online.exam.viewmodel.student.message.MessageRequestVM messageRequestVM);
+
+    void readMessage(Integer id, User user);
 }

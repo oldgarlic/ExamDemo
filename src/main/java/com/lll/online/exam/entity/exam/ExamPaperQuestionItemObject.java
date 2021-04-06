@@ -1,4 +1,4 @@
-package com.lll.online.exam.viewmodel.admin.exam;
+package com.lll.online.exam.entity.exam;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

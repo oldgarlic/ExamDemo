@@ -10,6 +10,7 @@ import com.lll.online.exam.viewmodel.admin.exam.ExamPaperPageRequestVM;
 import com.lll.online.exam.viewmodel.admin.exam.TaskExamPageRequestVM;
 import com.lll.online.exam.viewmodel.student.dashboard.PaperFilter;
 import com.lll.online.exam.viewmodel.student.dashboard.PaperInfo;
+import com.lll.online.exam.viewmodel.student.exam.ExamPaperPageVM;
 import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitItemVM;
 import com.lll.online.exam.viewmodel.student.exam.ExamPaperSubmitVM;
 
@@ -43,4 +44,8 @@ public interface ExamPaperService extends BaseService<ExamPaper>{
     List<PaperInfo> selectPaperInfo(PaperFilter paperFilter);
 
     ExamPaperAnswerInfo calculateExamPaperAnswer(ExamPaperSubmitVM examPaperSubmitVM, User user);
+
+    IPage<ExamPaper> studentPageList(ExamPaperPageVM model);
+
+    ExamPaperEditRequestVM examPaperToVM(Integer examPaperId);
 }

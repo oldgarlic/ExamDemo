@@ -11,6 +11,7 @@ import com.lll.online.exam.mapper.TaskExamCustomerAnswerMapper;
 import com.lll.online.exam.service.TaskExamCustomerAnswerService;
 import com.lll.online.exam.service.TextContentService;
 import com.lll.online.exam.utility.JsonUtil;
+import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,8 @@ public class TaskExamCustomerAnswerServiceImpl extends BaseServiceImpl<TaskExamC
             textContentService.update(textContent);
         }
     }
+
+    @Override
     public TaskExamCustomerAnswer getByTidUid(Integer taskId,Integer userId){
         QueryWrapper<TaskExamCustomerAnswer> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_exam_id",taskId).eq("create_user",userId);

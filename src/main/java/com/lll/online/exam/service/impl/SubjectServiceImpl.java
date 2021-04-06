@@ -70,4 +70,12 @@ public class SubjectServiceImpl extends BaseServiceImpl<Subject> implements Subj
         return subjectMapper.selectList(null);
     }
 
+    @Override
+    public List<Subject> selectByLevel(Integer userLevel) {
+        QueryWrapper<Subject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("level",userLevel);
+        List<Subject> subjects = subjectMapper.selectList(queryWrapper);
+        return subjects;
+    }
+
 }

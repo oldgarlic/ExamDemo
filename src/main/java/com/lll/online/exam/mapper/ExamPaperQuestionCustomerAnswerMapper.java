@@ -3,6 +3,7 @@ package com.lll.online.exam.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lll.online.exam.entity.ExamPaperQuestionCustomerAnswer;
+import com.lll.online.exam.entity.other.ExamPaperAnswerUpdate;
 import com.lll.online.exam.entity.other.KeyValue;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +24,7 @@ public interface ExamPaperQuestionCustomerAnswerMapper extends BaseMapper<ExamPa
     List<KeyValue> selectCountByDate(Date startDate,Date endDate);
 
     void insertList(List<ExamPaperQuestionCustomerAnswer> examPaperQuestionCustomerAnswers);
+
+    void updateScore(List<ExamPaperAnswerUpdate> examPaperAnswerUpdates);
+
 }

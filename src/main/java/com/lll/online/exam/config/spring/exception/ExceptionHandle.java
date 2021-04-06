@@ -1,11 +1,10 @@
-package com.lll.online.exam.config.exception;
+package com.lll.online.exam.config.spring.exception;
 
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.base.SystemCode;
 import com.lll.online.exam.utility.ErrorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.stream.Collectors;
 
 /**
- * 异常捕获取
+ * 异常捕获取：带补充
  *
  * @author ：Mr.Garlic
  * @date ： 2021/3/20

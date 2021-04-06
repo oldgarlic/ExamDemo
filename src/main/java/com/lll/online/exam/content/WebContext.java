@@ -15,7 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * @date ： 2021/3/20
  */
 @Component
-public class WebContent {
+public class WebContext {
     // TODO：依据successfulAuthentication#SecurityContextHolder.getContext().setAuthentication(authResult);
     // TODO: 我们可以从上下中获取用户信息，从SecurityContextHolder取出，存放到RequestContextHolder中
     // TODO：SecurityContextHolder的存放是用ThreadLocal，RequestContextHolder的存放是用HashMap

@@ -1,6 +1,7 @@
 package com.lll.online.exam.controller.student;
 
 import com.lll.online.exam.base.BaseController;
+import com.lll.online.exam.base.PageResult;
 import com.lll.online.exam.base.Result;
 import com.lll.online.exam.entity.User;
 import com.lll.online.exam.entity.UserEventLog;
@@ -12,6 +13,8 @@ import com.lll.online.exam.service.MessageService;
 import com.lll.online.exam.service.UserEventLogService;
 import com.lll.online.exam.service.UserService;
 import com.lll.online.exam.utility.DateTimeUtil;
+import com.lll.online.exam.viewmodel.student.message.MessageRequestVM;
+import com.lll.online.exam.viewmodel.student.message.MessageResponseVM;
 import com.lll.online.exam.viewmodel.student.user.UserEventLogVM;
 import com.lll.online.exam.viewmodel.student.user.UserRegisterVM;
 import com.lll.online.exam.viewmodel.student.user.UserResponseVM;
@@ -47,6 +50,35 @@ public class UserController extends BaseController {
     private MessageService messageService;
     @Autowired
     private AuthenticationService authenticationService;
+
+
+    /*
+    * @Description: 阅读消息
+    * @Param: Integer：message_user表的id
+    * @return: Result
+    * @Date: 2021/4/4
+    */
+    @PostMapping("message/read/{id}")
+    public Result readMessage(@PathVariable Integer id){
+        User user = getCurrentUser();
+        messageService.readMessage(id,user);
+        return Result.ok();
+    }
+
+
+    /*
+    * @Description: 消息分页
+    * @Param: MessageRequestVM
+    * @return: Result<PageResult<MessageResponseVM>>
+    * @Date: 2021/4/4
+    */
+    @PostMapping("message/page")
+    public Result<PageResult<MessageResponseVM>> page(@RequestBody MessageRequestVM messageRequestVM){
+        messageRequestVM.setReceiveUserId(getCurrentUser().getId());
+        PageResult<MessageResponseVM>  pageResult = messageService.studentPage(messageRequestVM);
+        return Result.ok(pageResult);
+    }
+
 
     /**
     * @Description: 查询当前用户信息

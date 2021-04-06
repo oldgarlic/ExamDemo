@@ -43,6 +43,13 @@
             #{item.createTime,jdbcType=TIMESTAMP},
             #{item.itemOrder,jdbcType=INTEGER})
         </foreach>
-
     </insert>
+
+    <update id="updateScore">
+        <foreach collection="list" item="item">
+            update t_exam_paper_question_customer_answer
+            set customer_score=#{item.customerScore} , do_right=#{item.doRight}
+            where id=#{item.id} ;
+        </foreach>
+    </update>
 </mapper>
